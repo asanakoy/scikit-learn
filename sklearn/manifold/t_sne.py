@@ -598,7 +598,8 @@ class TSNE(BaseEstimator):
                  early_exaggeration=12.0, learning_rate=200.0, n_iter=1000,
                  n_iter_without_progress=300, min_grad_norm=1e-7,
                  metric="euclidean", init="random", verbose=0,
-                 random_state=None, method='barnes_hut', angle=0.5):
+                 random_state=None, method='barnes_hut', angle=0.5,
+                 allow_negative_distance=False):
         self.n_components = n_components
         self.perplexity = perplexity
         self.early_exaggeration = early_exaggeration
@@ -612,6 +613,7 @@ class TSNE(BaseEstimator):
         self.random_state = random_state
         self.method = method
         self.angle = angle
+        self.allow_negative_distance = allow_negative_distance
 
     def _fit(self, X, skip_num_points=0):
         """Fit the model using X as training data.
@@ -645,7 +647,7 @@ class TSNE(BaseEstimator):
                                  "used with metric=\"precomputed\".")
             if X.shape[0] != X.shape[1]:
                 raise ValueError("X should be a square distance matrix")
-            if np.any(X < 0):
+            if not self.allow_negative_distance and np.any(X < 0):
                 raise ValueError("All distances should be positive, the "
                                  "precomputed distances given as X is not "
                                  "correct")
