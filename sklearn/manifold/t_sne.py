@@ -53,7 +53,12 @@ def _joint_probabilities(distances, desired_perplexity, verbose):
     """
     # Compute conditional probabilities such that they approximately match
     # the desired perplexity
-    distances = distances.astype(np.float32, copy=False)
+    if distances.dtype != np.float32:
+        try:
+            distances = distances.astype(np.float32, copy=False)
+        except:
+            distances = distances.astype(np.float32)
+
     conditional_P = _utils._binary_search_perplexity(
         distances, None, desired_perplexity, verbose)
     P = conditional_P + conditional_P.T
